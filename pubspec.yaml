@@ -30,7 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_maps_flutter: ^2.2.8
   flutter_polyline_points: ^1.0.0
-  location: any
+  # location: any
   
 
 dev_dependencies:
