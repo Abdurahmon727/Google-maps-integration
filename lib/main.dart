@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: location == null
-          ? const Center(child: Text('Loading'))
+          ? const Center(child: CircularProgressIndicator())
           : Stack(
               alignment: Alignment.topRight,
               children: [
