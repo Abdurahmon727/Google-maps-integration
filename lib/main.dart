@@ -35,18 +35,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Google map'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            GoogleMap(
-              initialCameraPosition:
-                  CameraPosition(target: LatLng(10, 10), zoom: 15),
-            ),
-          ],
-        ),
+      body: const Stack(
+        children: [
+          GoogleMap(
+            zoomControlsEnabled: false,
+            z
+            compassEnabled: true,
+            initialCameraPosition:
+                CameraPosition(target: LatLng(41.01, 71.66), zoom: 10),
+          ),
+        ],
       ),
     );
   }
