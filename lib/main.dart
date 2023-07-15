@@ -36,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final Completer mapCompleter = Completer();
-  LatLng location = const LatLng(41.01, 71.66);
+  LatLng? location;
   int mapTypeIndex = 0;
   bool showTraffic = false;
 
@@ -53,57 +53,64 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('Google map'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: Stack(
-        alignment: Alignment.topRight,
-        children: [
-          GoogleMap(
-            onMapCreated: (controller) => mapCompleter.complete(controller),
-            mapType: mapTypes[mapTypeIndex % 4],
-            zoomControlsEnabled: false,
-            trafficEnabled: showTraffic,
-            myLocationEnabled: true,
-            markers: {
-              Marker(markerId: const MarkerId('location'), position: location),
-            },
-            initialCameraPosition:
-                const CameraPosition(target: LatLng(41.01, 71.66), zoom: 10),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
+      body: location == null
+          ? const Center(child: Text('Loading'))
+          : Stack(
+              alignment: Alignment.topRight,
               children: [
-                FloatingActionButton(
-                  child: const Icon(Icons.location_on),
-                  onPressed: () async {
-                    final pos = await Geolocator.getCurrentPosition();
-                    location = LatLng(pos.latitude, pos.longitude);
-                    setState(() {});
-                    final GoogleMapController contr = await mapCompleter.future;
-                    contr.animateCamera(CameraUpdate.newLatLng(location));
+                GoogleMap(
+                  onMapCreated: (controller) =>
+                      mapCompleter.complete(controller),
+                  mapType: mapTypes[mapTypeIndex % 4],
+                  zoomControlsEnabled: false,
+                  trafficEnabled: showTraffic,
+                  myLocationEnabled: true,
+                  markers: {
+                    Marker(
+                        markerId: const MarkerId('location'),
+                        position: location!),
                   },
+                  initialCameraPosition: const CameraPosition(
+                      target: LatLng(41.01, 71.66), zoom: 10),
                 ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
-                  child: const Icon(Icons.location_city),
-                  onPressed: () {
-                    mapTypeIndex++;
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      FloatingActionButton(
+                        child: const Icon(Icons.location_on),
+                        onPressed: () async {
+                          final pos = await Geolocator.getCurrentPosition();
+                          location = LatLng(pos.latitude, pos.longitude);
+                          setState(() {});
+                          final GoogleMapController contr =
+                              await mapCompleter.future;
+                          contr
+                              .animateCamera(CameraUpdate.newLatLng(location!));
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      FloatingActionButton(
+                        child: const Icon(Icons.location_city),
+                        onPressed: () {
+                          mapTypeIndex++;
 
-                    setState(() {});
-                  },
-                ),
-                const SizedBox(height: 10),
-                FloatingActionButton(
-                  child: const Icon(Icons.traffic),
-                  onPressed: () {
-                    showTraffic = !showTraffic;
-                    setState(() {});
-                  },
+                          setState(() {});
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      FloatingActionButton(
+                        child: const Icon(Icons.traffic),
+                        onPressed: () {
+                          showTraffic = !showTraffic;
+                          setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -128,5 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
+    final pos = await Geolocator.getCurrentPosition();
+    location = LatLng(pos.latitude, pos.longitude);
+    setState(() {});
   }
 }
